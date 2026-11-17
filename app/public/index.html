@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Le mur de post-it</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Le mur de post-it</h1>
+    <p>Colle une idée, mets un petit cœur à celles que tu aimes.</p>
+    <p id="etat" class="etat">Base : …</p>
+  </header>
+
+  <main>
+    <form id="formulaire">
+      <textarea name="texte" maxlength="100" rows="3" placeholder="Mon idée…" required></textarea>
+      <input name="auteur" maxlength="20" placeholder="Ton prénom">
+
+      <div class="couleurs">
+        <label><input type="radio" name="couleur" value="jaune" checked><span class="jaune"></span></label>
+        <label><input type="radio" name="couleur" value="rose"><span class="rose"></span></label>
+        <label><input type="radio" name="couleur" value="bleu"><span class="bleu"></span></label>
+        <label><input type="radio" name="couleur" value="vert"><span class="vert"></span></label>
+      </div>
+
+      <button>Coller sur le mur</button>
+      <p id="message"></p>
+    </form>
+
+    <div id="mur"></div>
+  </main>
+
+  <footer>
+    Cette page est servie par le conteneur : <code id="conteneur">…</code>
+  </footer>
+
+  <script>
+    async function afficherEtat() {
+      const etat = document.getElementById("etat");
+      try {
+        const sante = await (await fetch("/api/sante")).json();
+        etat.textContent = "Base : " + sante.base;
+        etat.className = "etat " + (sante.base === "connectée" ? "ok" : "ko");
+        document.getElementById("conteneur").textContent = sante.conteneur;
+      } catch (e) {
+        etat.textContent = "Base : non connectée";
+        etat.className = "etat ko";
+      }
+    }
+
+    async function afficher() {
+      const mur = document.getElementById("mur");
+      const reponse = await fetch("/api/postits");
+      mur.innerHTML = "";
+      if (!reponse.ok) {
+        mur.textContent = "La base ne répond pas encore…";
+        return;
+      }
+
+      const postits = await reponse.json();
+      if (postits.length === 0) {
+        mur.textContent = "Le mur est vide, colle la première idée !";
+      }
+
+      for (const p of postits) {
+        const note = document.createElement("div");
+        note.className = "postit " + p.couleur;
+
+        const texte = document.createElement("p");
+        texte.textContent = p.texte;
+
+        const auteur = document.createElement("small");
+        auteur.textContent = "— " + p.auteur;
+
+        const coeur = document.createElement("button");
+        coeur.className = "coeur";
+        coeur.textContent = "♥ " + p.coeurs;
+        coeur.onclick = async () => {
+          await fetch("/api/postits/" + p.id + "/coeur", { method: "POST" });
+          afficher();
+        };
+
+        const croix = document.createElement("button");
+        croix.className = "croix";
+        croix.textContent = "×";
+        croix.title = "Retirer";
+        croix.onclick = async () => {
+          await fetch("/api/postits/" + p.id, { method: "DELETE" });
+          afficher();
+        };
+
+        note.append(croix, texte, auteur, coeur);
+        mur.appendChild(note);
+      }
+    }
+
+    document.getElementById("formulaire").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const reponse = await fetch("/api/postits", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(Object.fromEntries(new FormData(e.target))),
+      });
+      const message = document.getElementById("message");
+      if (reponse.ok) {
+        message.textContent = "";
+        e.target.texte.value = "";
+      } else {
+        message.textContent = (await reponse.json()).erreur;
+      }
+      afficher();
+    });
+
+    afficherEtat();
+    afficher();
+    setInterval(afficherEtat, 5000);
+  </script>
+</body>
+</html>

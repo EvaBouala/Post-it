@@ -1,0 +1,188 @@
+:root {
+  --papier: #fbf6ee;
+  --carreaux: #e9e1d3;
+  --encre: #4a3f35;
+  --jaune: #ffe58a;
+  --rose: #ffc2d1;
+  --bleu: #bfe3f5;
+  --vert: #c9eab4;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Gaegu", cursive;
+  font-size: 1.25rem;
+  color: var(--encre);
+  background-color: var(--papier);
+  background-image:
+    linear-gradient(var(--carreaux) 1px, transparent 1px),
+    linear-gradient(90deg, var(--carreaux) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+header { text-align: center; padding: 40px 16px 8px; }
+
+h1 {
+  margin: 0;
+  font-size: 3.2rem;
+  transform: rotate(-1.5deg);
+}
+
+header p { margin: 4px 0; }
+
+.etat { font-size: 1rem; opacity: .8; }
+.etat.ok::before { content: "● "; color: #6fb85b; }
+.etat.ko::before { content: "● "; color: #e0626b; }
+
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+form {
+  position: relative;
+  background: white;
+  padding: 28px 18px 18px;
+  border-radius: 3px;
+  box-shadow: 2px 3px 0 rgba(74, 63, 53, .15);
+  transform: rotate(-1deg);
+}
+
+form::before, .postit::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: 80px;
+  height: 24px;
+  margin-left: -40px;
+  background: rgba(255, 255, 255, .6);
+  border: 1px solid rgba(74, 63, 53, .12);
+  transform: rotate(-3deg);
+}
+
+textarea, input[name="auteur"] {
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  border: 0;
+  border-bottom: 2px dashed var(--carreaux);
+  background: transparent;
+  padding: 6px 2px;
+  margin-bottom: 10px;
+  resize: none;
+}
+
+textarea:focus, input[name="auteur"]:focus {
+  outline: none;
+  border-bottom-color: var(--encre);
+}
+
+.couleurs { display: flex; gap: 10px; margin: 6px 0 16px; }
+.couleurs input { display: none; }
+
+.couleurs span {
+  display: block;
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  box-shadow: 1px 2px 0 rgba(74, 63, 53, .2);
+}
+
+.couleurs input:checked + span { border-color: var(--encre); transform: rotate(-6deg) scale(1.1); }
+
+.jaune { background: var(--jaune); }
+.rose  { background: var(--rose); }
+.bleu  { background: var(--bleu); }
+.vert  { background: var(--vert); }
+
+form > button {
+  width: 100%;
+  font: inherit;
+  font-weight: 700;
+  color: var(--encre);
+  background: var(--rose);
+  border: 2px solid var(--encre);
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+  box-shadow: 2px 3px 0 var(--encre);
+}
+
+form > button:hover { transform: translate(1px, 1px); box-shadow: 1px 2px 0 var(--encre); }
+
+#message { color: #c0394b; margin: 10px 0 0; min-height: 1em; }
+
+#mur {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 34px 26px;
+}
+
+.postit {
+  position: relative;
+  min-height: 190px;
+  padding: 30px 16px 14px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 2px 2px 18px 2px;     /* un coin un peu décollé */
+  box-shadow: 2px 4px 0 rgba(74, 63, 53, .18);
+  transition: transform .15s;
+}
+
+.postit:nth-child(4n+1) { transform: rotate(-2deg); }
+.postit:nth-child(4n+2) { transform: rotate(1.5deg); }
+.postit:nth-child(4n+3) { transform: rotate(-1deg); }
+.postit:nth-child(4n)   { transform: rotate(2.5deg); }
+.postit:hover { transform: rotate(0) scale(1.04); z-index: 1; }
+
+.postit p { margin: 0 0 8px; font-size: 1.45rem; line-height: 1.15; flex: 1; word-break: break-word; }
+.postit small { opacity: .75; }
+
+.coeur {
+  align-self: flex-end;
+  font: inherit;
+  font-weight: 700;
+  color: #c0394b;
+  background: rgba(255, 255, 255, .6);
+  border: 0;
+  border-radius: 20px;
+  padding: 2px 12px;
+  margin-top: 6px;
+  cursor: pointer;
+}
+
+.coeur:hover { background: white; }
+
+.croix {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font: inherit;
+  font-size: 1.3rem;
+  color: var(--encre);
+  background: none;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.postit:hover .croix { opacity: .6; }
+.croix:hover { opacity: 1 !important; }
+
+footer { text-align: center; padding: 30px 16px 40px; font-size: 1rem; opacity: .8; }
+code { background: white; padding: 1px 8px; border-radius: 4px; }
+
+@media (max-width: 720px) {
+  main { grid-template-columns: 1fr; }
+  h1 { font-size: 2.5rem; }
+}

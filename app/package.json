@@ -1,0 +1,13 @@
+{
+  "name": "mur-postit",
+  "version": "1.0.0",
+  "description": "Un mur de post-it : on colle une idée, on met des coeurs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "pg": "^8.16.0"
+  }
+}
